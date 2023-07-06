@@ -3,19 +3,19 @@ import { Typography, Checkbox, FormControlLabel, Grid, Paper } from "@mui/materi
 import VanillaJSONEditor from "./VanillaJSONEditor.js";
 import "./styles.css";
 
-export default function Editor() {
+export default function Editor({data,onChange}) {
   const [showEditor, setShowEditor] = useState(true);
   const [readOnly, setReadOnly] = useState(false);
-  const [content, setContent] = useState({
-    json: {
-      greeting: "Hello World",
-      color: "#ff3e00",
-      ok: true,
-      values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-    },
-    text: undefined
-  });
-
+//   const [content, setContent] = useState(data)
+//     json: {
+//       greeting: "Hello World",
+//       color: "#ff3e00",
+//       ok: true,
+//       values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+//     },
+//     text: undefined
+//   }
+console.log("data in the editor",data)
   const handleShowEditorToggle = () => {
     setShowEditor(!showEditor);
   };
@@ -48,9 +48,10 @@ export default function Editor() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <VanillaJSONEditor
-                  content={content}
+                  content={{json:data}}
                   readOnly={readOnly}
-                  onChange={setContent}
+                //   onChange={onChange}
+                //   mode="tree"
                 />
               </Grid>
             </Grid>
