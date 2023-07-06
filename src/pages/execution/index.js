@@ -60,20 +60,29 @@ const ExecutionPage = ({ configs = [
   };
 
   const  handleOnExecute= () => {
+    // {input,"config":{}}
     if (selectedConfig && selectedInput) {
-      const execution = {
-        config: selectedConfig,
-        input: selectedInput,
-      };
-  
+      console.log(configs[selectedConfig],selectedConfig,configs)
+      let inputData = inputs[selectedInput].data.text
+      let config = configs[selectedConfig]
+      let configData = configs[selectedConfig].data.text
+      let data = {
+       ...JSON.parse(inputData),
+        config:JSON.parse(configData)
+      }
+
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', 'Basic ' + btoa('api:api'));
+
+      let url = `http://localhost:8000/${config.namespace}/${config.gateway}/${config.version}/${config.action}`
       // Make the API call here using the execution details
       // Example code:
-      fetch('/api/execute', {
+      console.log(data,JSON.stringify(data))
+      fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(execution),
+        headers:headers,
+        body: JSON.stringify(data),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -85,7 +94,7 @@ const ExecutionPage = ({ configs = [
           console.error('API error:', error);
         });
   
-      setExecutionHistory((prevHistory) => [...prevHistory, execution]);
+      setExecutionHistory((prevHistory) => [...prevHistory, {config:selectedConfig,input:selectedInput}]);
       setSelectedConfig('');
       setSelectedInput('');
       setIsSnackbarOpen(true);
@@ -149,7 +158,7 @@ const ExecutionPage = ({ configs = [
                   <Typography variant="subtitle1" gutterBottom>
                     Config Data:
                   </Typography>
-                  <Editor data={configs.find((config) => config.id === selectedConfig)?.data} />
+                  <Editor data={configs.find((config) => config.id == selectedConfig)?.data} />
                 </Box>}
             </Box>
             {selectedConfig && (
@@ -179,7 +188,7 @@ const ExecutionPage = ({ configs = [
               </Box>
             )}
             <Box sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleExecution}>
+              <Button variant="contained" onClick={handleOnExecute}>
                 Execute
               </Button>
             </Box>
