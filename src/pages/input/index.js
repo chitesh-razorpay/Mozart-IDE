@@ -15,31 +15,31 @@ import {
 import Editor from '../../Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
-const InputPage = () => {
-  const [inputs, setInputs] = useState([
-    { name: 'Input 1', data: { value: 'Data 1' } },
-    { name: 'Input 2', data: { value: 'Data 2' } },
-  ]);
+const BLANK_DATA = {json:{},text:{}}
+export default function InputPage({data=[],handleAddInput,updateInputData}) {
+
   const [newInputName, setNewInputName] = useState('');
-  const [newInputData, setNewInputData] = useState({});
+  const [newInputData, setNewInputData] = useState(BLANK_DATA);
   const [selectedInput, setSelectedInput] = useState(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-
+  const [snackbarMsg,setSnackbarMsg] = useState("")
   const handleInputChange = (e) => {
     setNewInputName(e.target.value);
   };
 
-  const handleInputDataChange = (data) => {
-    console.log("input data change",selectedInput,data)
+  const handleInputDataChange = (newdata) => {
+    console.log("input data change",selectedInput,newdata)
     if (selectedInput!=null){
-        inputs[selectedInput].data = data
+        data[selectedInput].data = newdata
         return 
     }
-    setNewInputData(data);
+    setNewInputData(newdata);
   };
 
-  const handleAddInput = () => {
+  const handleOnSave = () => {
     if (newInputName.trim() === '') {
+      setSnackbarMsg("Input name can't be empty")
+      setIsSnackbarOpen(true)
       return;
     }
 
@@ -48,12 +48,19 @@ const InputPage = () => {
       data: newInputData,
     };
 
-    setInputs((prevInputs) => [...prevInputs, newInput]);
     setNewInputName('');
-    setNewInputData({});
+    setNewInputData(BLANK_DATA);
+    handleAddInput(newInput)
+    setSnackbarMsg("Input Created Successfully")
     setIsSnackbarOpen(true);
   };
 
+  const handleOnSaveChanges = ()=>{
+      updateInputData(data)
+      setSelectedInput(null)
+      setSnackbarMsg("Input Updated Successfully")
+      setIsSnackbarOpen(true);
+  }
   const handleInputClick = (input) => {
     setSelectedInput(input);
   };
@@ -71,12 +78,12 @@ const InputPage = () => {
               Inputs
             </Typography>
             <List>
-              {inputs.map((input, index) => (
+              {data.map((input, index) => (
                 <React.Fragment key={index}>
                   <ListItem disablePadding button onClick={() => handleInputClick(index)}>
                     <ListItemText primary={input.name} />
                   </ListItem>
-                  {index !== inputs.length - 1 && <Divider />}
+                  {index !== data?.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
             </List>
@@ -94,22 +101,23 @@ const InputPage = () => {
               <TextField
                 label="Name"
                 variant="outlined"
-                value={selectedInput!=null ? inputs[selectedInput].name: newInputName}
+                value={selectedInput!=null ? data[selectedInput].name: newInputName}
                 onChange={handleInputChange}
                 fullWidth
               />
             </Box>
+            {console.log("data",data,data[selectedInput],selectedInput)}
             <Box sx={{ mt: 2 }}>
               <Editor
-                data={selectedInput!=null ? inputs[selectedInput].data : newInputData}
+                data={selectedInput!=null ? data[selectedInput].data : newInputData}
                 onChange={handleInputDataChange}
                 locale={locale}
                 height="300px"
               />
             </Box>
             <Box sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleAddInput} sx={{m:1}}>
-                {selectedInput ? 'Save Changes' : 'Save'}
+              <Button variant="contained" onClick={selectedInput!=null ? handleOnSaveChanges :handleOnSave} sx={{m:1}}>
+                {selectedInput!=null ? 'Save Changes' : 'Save'}
               </Button>
               <Button
                 variant="outlined"
@@ -120,7 +128,7 @@ const InputPage = () => {
                 }}
                 sx={{m:1}}
               >
-                {selectedInput ? 'Cancel' : 'Reset'}
+                {selectedInput!=null ? 'Cancel' : 'Reset'}
               </Button>
             </Box>
           </Paper>
@@ -130,10 +138,9 @@ const InputPage = () => {
         open={isSnackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        message="New input created"
+        message={snackbarMsg}
       />
     </Box>
   );
 };
 
-export default InputPage;

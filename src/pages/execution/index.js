@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -16,20 +16,23 @@ import {
 } from '@mui/material';
 import Editor from '../../Editor';
 import SelectInput from '@mui/material/Select/SelectInput';
+import { NetworkCellRounded } from '@mui/icons-material';
 
 const ExecutionPage = ({ configs = [
-    { id:1,name: 'config 1', data: { value: 'Data 1' } },
-    { id:2,name: 'config 2', data: { value: 'Data 2' } },
+    { id:1,name: 'config 1', data: { json:{value: 'Data 1'} } },
+    { id:2,name: 'config 2', data: { json:{value: 'Data 1'} }},
   ], inputs = [
-    { id:1,name: 'Input 1', data: { value: 'Data 1' } },
-    { id:2,name: 'Input 2', data: { value: 'Data 2' } },
+    { id:1,name: 'Input 1', data: { json:{value: 'Data 1'} } },
+    { id:2,name: 'Input 2', data: { json:{value: 'Data 1'} }},
   ] }) => {
-  const [selectedConfig, setSelectedConfig] = useState('');
-  const [selectedInput, setSelectedInput] = useState('');
+  const [selectedConfig, setSelectedConfig] = useState(null);
+  const [selectedInput, setSelectedInput] = useState(null);
   const [executionHistory, setExecutionHistory] = useState([]);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
+
   const handleConfigChange = (event) => {
+    console.log("config chagne",event.target)
     setSelectedConfig(event.target.value);
   };
 
@@ -56,6 +59,40 @@ const ExecutionPage = ({ configs = [
     setIsSnackbarOpen(false);
   };
 
+  const  handleOnExecute= () => {
+    if (selectedConfig && selectedInput) {
+      const execution = {
+        config: selectedConfig,
+        input: selectedInput,
+      };
+  
+      // Make the API call here using the execution details
+      // Example code:
+      fetch('/api/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(execution),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle the response data
+          console.log('API response:', data);
+        })
+        .catch((error) => {
+          // Handle the error
+          console.error('API error:', error);
+        });
+  
+      setExecutionHistory((prevHistory) => [...prevHistory, execution]);
+      setSelectedConfig('');
+      setSelectedInput('');
+      setIsSnackbarOpen(true);
+    }
+  };
+
+  
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
@@ -100,13 +137,14 @@ const ExecutionPage = ({ configs = [
                 fullWidth
                 sx={{ mb: 2 }}
               >
-                <MenuItem value="">None</MenuItem>
+                {/* <MenuItem value="">None</MenuItem> */}
                 {configs.map((config) => (
                   <MenuItem key={config.id} value={config.id}>
-                    {config.name}
+                    {config.namespace}
                   </MenuItem>
                 ))}
               </Select>
+              {console.log("selected config",selectedConfig,configs)}
              {selectedConfig &&  <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle1" gutterBottom>
                     Config Data:
@@ -136,7 +174,7 @@ const ExecutionPage = ({ configs = [
                   <Typography variant="subtitle1" gutterBottom>
                     Input Data:
                   </Typography>
-                  <Editor data={inputs.find((input) => input.id === selectedInput)?.id} />
+                  <Editor data={inputs.find((input) => input.id === selectedInput)?.data} />
                 </Box>)}
               </Box>
             )}

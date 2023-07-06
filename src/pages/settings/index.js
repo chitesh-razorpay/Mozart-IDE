@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { Cancel, Edit, Save } from '@mui/icons-material';
 
-const SettingsPage = () => {
+const SettingsPage = ({settings,onSave}) => {
   const [mozartUrl, setMozartUrl] = useState('default_url');
   const [username, setUsername] = useState('default_username');
   const [password, setPassword] = useState('default_password');
@@ -19,14 +19,10 @@ const SettingsPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // Load settings from localStorage
-    const storedMozartUrl = localStorage.getItem('mozartUrl');
-    const storedUsername = localStorage.getItem('username');
-    const storedPassword = localStorage.getItem('password');
-
-    if (storedMozartUrl) setMozartUrl(storedMozartUrl);
-    if (storedUsername) setUsername(storedUsername);
-    if (storedPassword) setPassword(storedPassword);
+    console.log("data in set",settings)
+   setMozartUrl(settings.mozartUrl)
+   setUsername(settings.username)
+   setPassword(settings.password)
   }, []);
 
   const handleEdit = () => {
@@ -49,10 +45,8 @@ const SettingsPage = () => {
     }
 
     // Save settings to localStorage
-    localStorage.setItem('mozartUrl', mozartUrl);
-    localStorage.setItem('username', username);
-    localStorage.setItem('password', password);
-
+    
+    onSave({mozartUrl:mozartUrl,username:username,password:password})
     setIsEditMode(false);
     setIsSnackbarOpen(true);
     setIsError(false);

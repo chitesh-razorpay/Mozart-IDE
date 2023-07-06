@@ -15,48 +15,70 @@ import {
 import Editor from '../../Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
-const InputPage = () => {
-  const [inputs, setInputs] = useState([
-    { name: 'config 1', data: { value: 'Data 1' } },
-    { name: 'config 2', data: { value: 'Data 2' } },
-  ]);
-  const [newInputName, setNewInputName] = useState('');
-  const [newInputData, setNewInputData] = useState({});
+const BLANK_DATA = {json:{},text:{}}
+export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
+
+  const [newConfigNamespace, setNewConfigNamespace] = useState('test');
+  const [newConfigVersion, setNewConfigVersion] = useState('test');
+  const [newConfigGateway, setNewConfigGateway] = useState('test');
+  const [newConfigAction, setNewConfigAction] = useState('test');
+  const [newInputData, setNewInputData] = useState(BLANK_DATA);
   const [selectedInput, setSelectedInput] = useState(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage,setsnackBarMessage] = useState("")
-  const handleInputChange = (e) => {
-    setNewInputName(e.target.value);
+  const [snackbarMsg,setSnackbarMsg] = useState("")
+
+  const handleInputChange = (e,field) => {
+    switch (field){
+      case "namespace":setNewConfigNamespace(e.target.value);break;
+      case "action":setNewConfigAction(e.target.value);break;
+      case "gateway":setNewConfigGateway(e.target.value);break;
+      case "version":setNewConfigVersion(e.target.value);break;
+    }
   };
 
-  const handleInputDataChange = (data) => {
-    console.log("config data change",selectedInput,data)
+  const resetData = ()=>{
+    setNewConfigAction("")
+    setNewConfigGateway("")
+    setNewConfigNamespace("")
+    setNewConfigVersion("")
+  }
+  const handleInputDataChange = (newdata) => {
+    console.log("handleinptudatachange",newdata)
     if (selectedInput!=null){
-        inputs[selectedInput].data = data
+        data[selectedInput].data = newdata
         return 
     }
-    setNewInputData(data);
+    setNewInputData(newdata);
   };
 
-  const handleAddInput = () => {
-    if (newInputName.trim() === '') {
-        setsnackBarMessage("Config Name not defind")
-        setIsSnackbarOpen(true)
-      return;
-    }
+  const handleOnSave = () => {
+    // if (newInputName.trim() === '') {
+    //   setSnackbarMsg("Config name can't be empty")
+    //   setIsSnackbarOpen(true)
+    //   return;
+    // }
 
     const newInput = {
-      name: newInputName.trim(),
+      namespace: newConfigNamespace.trim(),
+      action:newConfigAction.trim(),
+      gateway:newConfigGateway.trim(),
+      version:newConfigVersion.trim(),
       data: newInputData,
     };
 
-    setInputs((prevInputs) => [...prevInputs, newInput]);
-    setNewInputName('');
-    setNewInputData({});
-    setsnackBarMessage("New config created")
+    resetData()
+    setNewInputData(BLANK_DATA);
+    handleAddInput(newInput)
+    setSnackbarMsg("Config Created Successfully")
     setIsSnackbarOpen(true);
   };
 
+  const handleOnSaveChanges = ()=>{
+      updateInputData(data)
+      setSelectedInput(null)
+      setSnackbarMsg("Config Updated Successfully")
+      setIsSnackbarOpen(true);
+  }
   const handleInputClick = (input) => {
     setSelectedInput(input);
   };
@@ -71,15 +93,15 @@ const InputPage = () => {
         <Grid item xs={4}>
           <Paper sx={{ height: '100%', padding: 2 }}>
             <Typography variant="h5" gutterBottom>
-              Config
+              Configs
             </Typography>
             <List>
-              {inputs.map((input, index) => (
+              {data.map((input, index) => (
                 <React.Fragment key={index}>
                   <ListItem disablePadding button onClick={() => handleInputClick(index)}>
-                    <ListItemText primary={input.name} />
+                    <ListItemText primary={input.namespace} />
                   </ListItem>
-                  {index !== inputs.length - 1 && <Divider />}
+                  {index !== data?.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
             </List>
@@ -95,35 +117,55 @@ const InputPage = () => {
             </Typography>
             <Box sx={{ mt: 2 }}>
               <TextField
-                label="Name"
+                label="Namespace"
                 variant="outlined"
-                value={selectedInput!=null ? inputs[selectedInput].name: newInputName}
-                onChange={handleInputChange}
+                value={selectedInput!=null ? data[selectedInput].namespace: newConfigNamespace}
+                onChange={(e)=>handleInputChange(e,"namespace")}
+                fullWidth
+              />
+              <TextField
+                label="Action"
+                variant="outlined"
+                value={selectedInput!=null ? data[selectedInput].action: newConfigAction}
+                onChange={(e)=>handleInputChange(e,"action")}
+                fullWidth
+              />
+              <TextField
+                label="Version"
+                variant="outlined"
+                value={selectedInput!=null ? data[selectedInput].version: newConfigVersion}
+                onChange={(e)=>handleInputChange(e,"version")}
+                fullWidth
+              />
+              <TextField
+                label="Gateway"
+                variant="outlined"
+                value={selectedInput!=null ? data[selectedInput].gateway: newConfigGateway}
+                onChange={(e)=>handleInputChange(e,"gateway")}
                 fullWidth
               />
             </Box>
+            {console.log("data in configs",data,data[selectedInput],selectedInput)}
             <Box sx={{ mt: 2 }}>
               <Editor
-                data={selectedInput!=null ? inputs[selectedInput].data : newInputData}
+                data={selectedInput!=null ? data[selectedInput].data : newInputData}
                 onChange={handleInputDataChange}
                 locale={locale}
                 height="300px"
               />
             </Box>
             <Box sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={handleAddInput} sx={{m:1}}>
-                {selectedInput ? 'Save Changes' : 'Save'}
+              <Button variant="contained" onClick={selectedInput!=null ? handleOnSaveChanges :handleOnSave} sx={{m:1}}>
+                {selectedInput!=null ? 'Save Changes' : 'Save'}
               </Button>
               <Button
-              sx={{m:1}}
                 variant="outlined"
-                onClick={() => {
-                  setSelectedInput(null);
-                  setNewInputName('');
-                  setNewInputData({});
-                }}
+                onClick={
+                  resetData
+                }
+                sx={{m:1}}
               >
-                {selectedInput ? 'Cancel' : 'Reset'}
+                {selectedInput!=null ? 'Cancel' : 'Reset'}
               </Button>
             </Box>
           </Paper>
@@ -133,10 +175,9 @@ const InputPage = () => {
         open={isSnackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        message={snackbarMessage}
+        message={snackbarMsg}
       />
     </Box>
   );
 };
 
-export default InputPage;
