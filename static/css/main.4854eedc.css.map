@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.4854eedc.css","mappings":"AAAA,0BACI,YAAa,CACb,QACF","sources":["VanillaJSONEditor.css"],"sourcesContent":[".vanilla-jsoneditor-react {\r\n    display: flex;\r\n    flex: 1;\r\n  }\r\n  "],"names":[],"sourceRoot":""}
