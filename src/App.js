@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Grid, Paper, Box, Typography, TextField, Button } from "@mui/material";
 import Editor from "./Editor";
+import Setting from "./setting";
+import CreateConfigModal from "./createConfig";
 
 const ConfigPanel = () => {
   const [selectedConfig, setSelectedConfig] = useState("");
@@ -36,25 +38,35 @@ const ConfigPanel = () => {
 
 const ConfigDetails = ({ selectedConfig }) => {
   return (
-    <Paper elevation={3} sx={{ height: "100%" }}>
-      <Box p={2}>
+    <Paper elevation={3} sx={{ height: '100%' }}>
+      <Box p={2} sx={{ backgroundColor: '#1976d2', color: 'white', textAlign: 'center' }}>
         <Typography variant="h6" gutterBottom>
           Config Details
         </Typography>
-        <Grid container >
-          <Grid item xs={2} variant="body1" gutterBottom>
-            Version: {selectedConfig.version}
+      </Box>
+      <Box p={2}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Typography variant="body1" gutterBottom>
+              Version: {selectedConfig.version}
+            </Typography>
           </Grid>
-          <Grid item xs={3.5} variant="body1" gutterBottom>
-            Namespace: {selectedConfig.namespace}
+          <Grid item xs={6}>
+            <Typography variant="body1" gutterBottom>
+              Namespace: {selectedConfig.namespace}
+            </Typography>
           </Grid>
-          <Grid item xs={3.5} variant="body1" gutterBottom>
-            Actions: {selectedConfig.actions}
+          <Grid item xs={6}>
+            <Typography variant="body1" gutterBottom>
+              Actions: {selectedConfig.actions}
+            </Typography>
           </Grid>
-          <Grid item xs={3} variant="body1" gutterBottom>
-            Gateway: {selectedConfig.gateway}
+          <Grid item xs={6}>
+            <Typography variant="body1" gutterBottom>
+              Gateway: {selectedConfig.gateway}
+            </Typography>
           </Grid>
-        </Grid >
+        </Grid>
       </Box>
     </Paper>
   );
@@ -123,6 +135,8 @@ const ConfigInput = () => {
 
 const App = () => {
   // Mock selected config
+  const [showSettingsModal,setShowSettingsModal] = useState(false)
+  const[showCreateConfigModal,setShowCreateConfigModal]= useState(false)
   const selectedConfig = {
     namespace: "Namespace 1",
     version: "1.0",
@@ -134,12 +148,40 @@ const App = () => {
     },
   };
 
+  const showModalhandler = () =>{
+    setShowSettingsModal(true)
+  }
+
+  const closeModalHandler = ()=>{
+    setShowSettingsModal(false)
+  }
+  const showCreateConfigModalHandler = () =>{
+    setShowCreateConfigModal(true)
+  }
+
+  const closeCreateConfigModalHandler = ()=>{
+    setShowCreateConfigModal(false)
+  }
   return (
     <Grid container spacing={2} sx={{ height: "100vh" }}>
+      <Setting showModal = {showSettingsModal} closeModalHandler={closeModalHandler}/>
+      <CreateConfigModal open={showCreateConfigModal} onClose={closeCreateConfigModalHandler} onSave={()=>{}}/>
       <Grid item xs={3}>
         <ConfigPanel />
       </Grid>
       <Grid item xs={9}>
+        <Grid container xs={12} padding={2} justifyContent={"right"}>
+          <Grid item margin={1}>   
+            <Button variant="contained" onClick={showCreateConfigModalHandler}>
+              Create Config
+            </Button>
+          </Grid>
+         <Grid item margin={1}>
+            <Button variant="contained" onClick={showModalhandler}>
+              Settings
+            </Button>
+        </Grid>
+        </Grid>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <ConfigDetails selectedConfig={selectedConfig} />
