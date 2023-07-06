@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Typography, Checkbox, FormControlLabel, Grid, Paper } from "@mui/material";
 import VanillaJSONEditor from "./VanillaJSONEditor.js";
-import "./styles.css";
 
 export default function Editor({data,onChange}) {
   const [showEditor, setShowEditor] = useState(true);
