@@ -18,7 +18,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 const BLANK_DATA = {json:{},text:{}}
 export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
   const [newConfigName,setNewConfigName]  = useState("Config " + data.length)
-  const [newConfigNamespace, setNewConfigNamespace] = useState('test');
+  const [newConfigNamespace, setNewConfigNamespace] = useState('');
   const [newConfigVersion, setNewConfigVersion] = useState('test');
   const [newConfigGateway, setNewConfigGateway] = useState('test');
   const [newConfigAction, setNewConfigAction] = useState('test');
@@ -29,6 +29,7 @@ export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
 
   const handleInputChange = (e,field) => {
     switch (field){
+      case "name":setNewConfigName(e.target.value);break;
       case "namespace":setNewConfigNamespace(e.target.value);break;
       case "action":setNewConfigAction(e.target.value);break;
       case "gateway":setNewConfigGateway(e.target.value);break;
@@ -37,6 +38,7 @@ export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
   };
 
   const resetData = ()=>{
+    setNewConfigName("")
     setNewConfigAction("")
     setNewConfigGateway("")
     setNewConfigNamespace("")
@@ -52,11 +54,6 @@ export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
   };
 
   const handleOnSave = () => {
-    // if (newInputName.trim() === '') {
-    //   setSnackbarMsg("Config name can't be empty")
-    //   setIsSnackbarOpen(true)
-    //   return;
-    // }
 
     const newInput = {
       namespace: newConfigNamespace.trim(),
@@ -65,6 +62,14 @@ export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
       version:newConfigVersion.trim(),
       data: newInputData,
     };
+
+    Object.entries(newInput).forEach(([field, value]) => {
+      if (value.trim() ===''){
+        setSnackbarMsg(field + " name can't be empty")
+        setIsSnackbarOpen(true)
+        return;
+      }
+    });
 
     resetData()
     setNewInputData(BLANK_DATA);

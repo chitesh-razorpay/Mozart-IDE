@@ -10,6 +10,9 @@ import InputPage from "./pages/input";
 import ConfigPage from "./pages/config";
 import ExecutionPage from "./pages/execution";
 import SettingsPage from "./pages/settings";
+import TestIcon from '@mui/icons-material/HelpOutlineOutlined';
+import EmojiObjectsOutlinedIcon from '@mui/icons-material/EmojiObjectsOutlined';
+import { display } from "@mui/system";
 
 const theme = createTheme()
 
@@ -102,7 +105,33 @@ const App = () => {
         return <ConfigPage data={configs} handleAddInput={handleAddConfig} updateInputData={updateConfigData}/>;
       case 3:
         return <ExecutionPage settings={settings} executionHistory={executionHistory} onExecute={handleAddExecution} inputs={inputs.map((inp,idx)=>{return {id:idx,...inp}})} configs={configs.map((cfg,idx)=>{return {id:idx,...cfg}})}/>;
-      case 4:
+        case 4:
+        return (
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 20,
+              display:"flex",
+              alignItems:"center",
+              justifyContent:"center",
+              border: '1px solid',
+              borderColor: 'primary.main',
+              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+              '&:hover': {
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                cursor: 'pointer',
+              },
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <EmojiObjectsOutlinedIcon sx={{ mr: 2, fontSize: '2rem' }} />
+            <Typography variant="h4" color="primary" sx={{ fontFamily: 'cursive' }}>
+              Coming Soon
+            </Typography>
+          </Paper>
+        );
+        case 5:
         return <SettingsPage settings={settings} onSave={handleSettingSave}/>;
       default:
         return null;
@@ -123,6 +152,7 @@ const App = () => {
         <Tab label="Input" icon={<InputIcon />} />
         <Tab label="Config" icon={<ConfigIcon />} />
         <Tab label="Execute" icon={<ExecuteIcon />} />
+        <Tab label="Test" icon={<TestIcon />} />
         <Tab label="Settings" icon={<SettingsIcon />} />
       </Tabs>
     </AppBar>
