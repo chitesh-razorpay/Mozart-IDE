@@ -21,6 +21,7 @@ import Editor from '../../components/editor/Editor';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 
 
+
 const ExecutionPage = ({
   settings,
   executionHistory,
@@ -57,12 +58,12 @@ const ExecutionPage = ({
       let inputData = inputs[selectedInput]?.data?.text;
       let config = configs[selectedConfig];
       let configData = configs[selectedConfig]?.data?.text;
-      console.log(inputData,configData)
+      console.log(inputData, configData)
       let data = {
         ...JSON.parse(inputData),
-        config: configData ? JSON.parse(configData):{},
+        config: configData ? JSON.parse(configData) : {},
       };
-      console.log("settings",settings)
+      console.log("settings", settings)
       const headers = new Headers();
       headers.append('Content-Type', 'application/json');
       headers.append('Authorization', 'Basic ' + btoa(`${settings.username}:${settings.password}`));
@@ -78,18 +79,19 @@ const ExecutionPage = ({
         .then((data) => {
           console.log('API response:', data);
           let newExecution = {
-            config:selectedConfig,
-            input:selectedInput,
-            response:JSON.stringify(data)
+            config: selectedConfig,
+            input: selectedInput,
+            response: JSON.stringify(data)
           }
           onExecute(newExecution)
           handleExecutionClick(newExecution)
         })
         .catch((error) => {
           let newExecution = {
-            config:selectedConfig,
-            input:selectedInput,
-            error:JSON.stringify({"error":error.message})
+
+            config: selectedConfig,
+            input: selectedInput,
+            error: JSON.stringify({ "error": error.message })
           }
           onExecute(newExecution)
           handleExecutionClick(newExecution)
@@ -119,7 +121,7 @@ const ExecutionPage = ({
       return null;
     }
   };
-  
+
 
   return (
     <Box sx={{ p: 3 }}>
@@ -138,31 +140,31 @@ const ExecutionPage = ({
                 executionHistory.map((execution, index) => (
                   <React.Fragment key={index}>
                     <ListItem
-                          sx={{
-                            padding: '10px',
-                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                            borderRadius: '4px',
-                            '&:hover': {
-                              backgroundColor: '#f5f5f5',
-                              cursor: 'pointer',
-                            },
-                          }}
-                          onClick={() => handleExecutionClick(execution)}
-                        >
-                          <Box sx={{ width: '100%' }}>
-                            <Grid container spacing={7} alignItems="center" justifyItems={'space-evenly'}>
-                              <Grid item>
-                                <Typography variant="subtitle1" color="primary">
-                                  Config: {execution.config}
-                                </Typography>
-                              </Grid>
-                              <Grid item>
-                                <Typography variant="subtitle1">Input: {execution.input}</Typography>
-                              </Grid>
-                              <Grid item>{getStatusIcon(execution)}</Grid>
-                            </Grid>
-                          </Box>
-                        </ListItem>
+                      sx={{
+                        padding: '10px',
+                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                        borderRadius: '4px',
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5',
+                          cursor: 'pointer',
+                        },
+                      }}
+                      onClick={() => handleExecutionClick(execution)}
+                    >
+                      <Box sx={{ width: '100%' }}>
+                        <Grid container spacing={7} alignItems="center" justifyItems={'space-evenly'}>
+                          <Grid item>
+                            <Typography variant="subtitle1" color="primary">
+                              Config: {execution.config}
+                            </Typography>
+                          </Grid>
+                          <Grid item>
+                            <Typography variant="subtitle1">Input: {execution.input}</Typography>
+                          </Grid>
+                          <Grid item>{getStatusIcon(execution)}</Grid>
+                        </Grid>
+                      </Box>
+                    </ListItem>
                   </React.Fragment>
                 ))}
             </List>
@@ -185,7 +187,7 @@ const ExecutionPage = ({
               >
                 {configs.map((config) => (
                   <MenuItem key={config.id} value={config.id}>
-                    {config.namespace}
+                    {config.input}
                   </MenuItem>
                 ))}
               </Select>
@@ -247,12 +249,12 @@ const ExecutionPage = ({
       >
         <DialogTitle >Execution Details</DialogTitle>
         <DialogContent>
-        <DialogContentText>
-          <Typography variant="subtitle1" gutterBottom>
-            Response:
-          </Typography>
-          <pre>{JSON.stringify(JSON.parse(selectedExecution?.response?selectedExecution?.response:selectedExecution?.error), null, 2)}</pre>
-        </DialogContentText>
+          <DialogContentText>
+            <Typography variant="subtitle1" gutterBottom>
+              Response:
+            </Typography>
+            <pre>{JSON.stringify(JSON.parse(selectedExecution?.response ? selectedExecution?.response : selectedExecution?.error), null, 2)}</pre>
+          </DialogContentText>
 
           <DialogContentText>
             <Typography variant="subtitle1" gutterBottom>
@@ -268,7 +270,7 @@ const ExecutionPage = ({
             <Editor data={inputs.find((input) => input.id === selectedExecution?.input)?.data} />
           </DialogContentText>
           <Divider sx={{ my: 2 }} />
-        
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleModalClose}>Close</Button>

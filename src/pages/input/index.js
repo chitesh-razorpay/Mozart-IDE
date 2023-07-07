@@ -15,23 +15,23 @@ import {
 import Editor from '../../components/editor/Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
-const BLANK_DATA = {json:{},text:{}}
-export default function InputPage({data=[],handleAddInput,updateInputData}) {
+const BLANK_DATA = { json: {}, text: {} }
+export default function InputPage({ data = [], handleAddInput, updateInputData }) {
 
-  const [newInputName, setNewInputName] = useState('');
+  const [newInputName, setNewInputName] = useState('demo-input.json');
   const [newInputData, setNewInputData] = useState(BLANK_DATA);
   const [selectedInput, setSelectedInput] = useState(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMsg,setSnackbarMsg] = useState("")
+  const [snackbarMsg, setSnackbarMsg] = useState("")
   const handleInputChange = (e) => {
     setNewInputName(e.target.value);
   };
 
   const handleInputDataChange = (newdata) => {
-    console.log("input data change",selectedInput,newdata)
-    if (selectedInput!=null){
-        data[selectedInput].data = newdata
-        return 
+    console.log("input data change", selectedInput, newdata)
+    if (selectedInput != null) {
+      data[selectedInput].data = newdata
+      return
     }
     setNewInputData(newdata);
   };
@@ -55,11 +55,11 @@ export default function InputPage({data=[],handleAddInput,updateInputData}) {
     setIsSnackbarOpen(true);
   };
 
-  const handleOnSaveChanges = ()=>{
-      updateInputData(data)
-      setSelectedInput(null)
-      setSnackbarMsg("Input Updated Successfully")
-      setIsSnackbarOpen(true);
+  const handleOnSaveChanges = () => {
+    updateInputData(data)
+    setSelectedInput(null)
+    setSnackbarMsg("Input Updated Successfully")
+    setIsSnackbarOpen(true);
   }
   const handleInputClick = (input) => {
     setSelectedInput(input);
@@ -87,7 +87,7 @@ export default function InputPage({data=[],handleAddInput,updateInputData}) {
                 </React.Fragment>
               ))}
             </List>
-            <Button variant="outlined" color="primary" fullWidth onClick={()=>setSelectedInput(null)}>
+            <Button variant="outlined" color="primary" fullWidth onClick={() => setSelectedInput(null)}>
               Add New Input
             </Button>
           </Paper>
@@ -95,29 +95,29 @@ export default function InputPage({data=[],handleAddInput,updateInputData}) {
         <Grid item xs={8}>
           <Paper sx={{ height: '100%', padding: 2 }}>
             <Typography variant="h5" gutterBottom>
-              {selectedInput !=null? 'Edit Input' : 'Create New Input'}
+              {selectedInput != null ? 'Edit Input' : 'Create New Input'}
             </Typography>
             <Box sx={{ mt: 2 }}>
               <TextField
                 label="Name"
                 variant="outlined"
-                value={selectedInput!=null ? data[selectedInput].name: newInputName}
+                value={selectedInput != null ? data[selectedInput].name : newInputName}
                 onChange={handleInputChange}
                 fullWidth
               />
             </Box>
-            {console.log("data",data,data[selectedInput],selectedInput)}
+            {console.log("data", data, data[selectedInput], selectedInput)}
             <Box sx={{ mt: 2 }}>
               <Editor
-                data={selectedInput!=null ? data[selectedInput].data : newInputData}
+                data={selectedInput != null ? data[selectedInput].data : newInputData}
                 onChange={handleInputDataChange}
                 locale={locale}
                 height="300px"
               />
             </Box>
             <Box sx={{ mt: 2 }}>
-              <Button variant="contained" onClick={selectedInput!=null ? handleOnSaveChanges :handleOnSave} sx={{m:1}}>
-                {selectedInput!=null ? 'Save Changes' : 'Save'}
+              <Button variant="contained" onClick={selectedInput != null ? handleOnSaveChanges : handleOnSave} sx={{ m: 1 }}>
+                {selectedInput != null ? 'Save Changes' : 'Save'}
               </Button>
               <Button
                 variant="outlined"
@@ -126,9 +126,9 @@ export default function InputPage({data=[],handleAddInput,updateInputData}) {
                   setNewInputName('');
                   setNewInputData({});
                 }}
-                sx={{m:1}}
+                sx={{ m: 1 }}
               >
-                {selectedInput!=null ? 'Cancel' : 'Reset'}
+                {selectedInput != null ? 'Cancel' : 'Reset'}
               </Button>
             </Box>
           </Paper>

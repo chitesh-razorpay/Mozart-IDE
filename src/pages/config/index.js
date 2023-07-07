@@ -18,6 +18,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 const BLANK_DATA = { json: {}, text: {} }
 export default function ConfigPage({ data = [], handleAddInput, updateInputData }) {
 
+  const [newConfigName, setNewConfigName] = useState('demo-config.json');
   const [newConfigNamespace, setNewConfigNamespace] = useState('demoNamespace');
   const [newConfigVersion, setNewConfigVersion] = useState('v1');
   const [newConfigGateway, setNewConfigGateway] = useState('demoGateway');
@@ -29,6 +30,7 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
 
   const handleInputChange = (e, field) => {
     switch (field) {
+      case "name": setNewConfigName(e.target.value); break;
       case "namespace": setNewConfigNamespace(e.target.value); break;
       case "action": setNewConfigAction(e.target.value); break;
       case "gateway": setNewConfigGateway(e.target.value); break;
@@ -41,6 +43,7 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
     setNewConfigGateway("")
     setNewConfigNamespace("")
     setNewConfigVersion("")
+    setNewConfigName("")
   }
   const handleInputDataChange = (newdata) => {
     console.log("handleinptudatachange", newdata)
@@ -54,6 +57,7 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
   const handleOnSave = () => {
 
     const newInput = {
+      input: newConfigName.trim(),
       namespace: newConfigNamespace.trim(),
       action: newConfigAction.trim(),
       gateway: newConfigGateway.trim(),
@@ -102,7 +106,7 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
               {data.map((input, index) => (
                 <React.Fragment key={index}>
                   <ListItem disablePadding button onClick={() => handleInputClick(index)}>
-                    <ListItemText primary={input.namespace} />
+                    <ListItemText primary={input.input} />
                   </ListItem>
                   {index !== data?.length - 1 && <Divider />}
                 </React.Fragment>
@@ -119,6 +123,14 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
               {selectedInput != null ? 'Edit Config' : 'Create New Config'}
             </Typography>
             <Box sx={{ mt: 2 }}>
+              <TextField
+                sx={{ mt: 1, mb: 1 }}
+                label="Config Name"
+                variant="outlined"
+                value={selectedInput != null ? data[selectedInput].name : newConfigName}
+                onChange={(e) => handleInputChange(e, "name")}
+                fullWidth
+              />
               <TextField
                 sx={{ mt: 1, mb: 1 }}
                 label="Namespace"
