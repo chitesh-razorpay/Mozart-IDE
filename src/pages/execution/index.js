@@ -41,27 +41,14 @@ const ExecutionPage = ({ configs = [
     setSelectedInput(event.target.value);
   };
 
-  const handleExecution = () => {
-    if (selectedConfig && selectedInput) {
-      const execution = {
-        config: selectedConfig,
-        input: selectedInput,
-      };
-
-      setExecutionHistory((prevHistory) => [...prevHistory, execution]);
-      setSelectedConfig('');
-      setSelectedInput('');
-      setIsSnackbarOpen(true);
-    }
-  };
-
+  
   const handleSnackbarClose = () => {
     setIsSnackbarOpen(false);
   };
 
   const  handleOnExecute= () => {
     // {input,"config":{}}
-    if (selectedConfig && selectedInput) {
+    if (selectedConfig!=null && selectedInput!=null) {
       console.log(configs[selectedConfig],selectedConfig,configs)
       let inputData = inputs[selectedInput].data.text
       let config = configs[selectedConfig]
@@ -95,8 +82,8 @@ const ExecutionPage = ({ configs = [
         });
   
       setExecutionHistory((prevHistory) => [...prevHistory, {config:selectedConfig,input:selectedInput}]);
-      setSelectedConfig('');
-      setSelectedInput('');
+      setSelectedConfig(null);
+      setSelectedInput(null);
       setIsSnackbarOpen(true);
     }
   };
@@ -154,14 +141,14 @@ const ExecutionPage = ({ configs = [
                 ))}
               </Select>
               {console.log("selected config",selectedConfig,configs)}
-             {selectedConfig &&  <Box sx={{ mt: 2 }}>
+             {selectedConfig!=null &&  <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle1" gutterBottom>
                     Config Data:
                   </Typography>
-                  <Editor data={configs.find((config) => config.id == selectedConfig)?.data} />
+                  <Editor data={configs.find((config) => config.id === selectedConfig!=null)?.data} />
                 </Box>}
             </Box>
-            {selectedConfig && (
+            {selectedConfig!=null && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Select Input:
@@ -172,14 +159,13 @@ const ExecutionPage = ({ configs = [
                   fullWidth
                   sx={{ mb: 2 }}
                 >
-                  <MenuItem value="">None</MenuItem>
                   {inputs.map((input) => (
                     <MenuItem key={input.id} value={input.id}>
                       {input.name}
                     </MenuItem>
                   ))}
                 </Select>
-                {selectedInput && (<Box sx={{ mt: 2 }}>
+                {selectedInput!=null && (<Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle1" gutterBottom>
                     Input Data:
                   </Typography>

@@ -117,31 +117,36 @@ export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
             </Typography>
             <Box sx={{ mt: 2 }}>
               <TextField
+                sx={{mt:1,mb:1}}
                 label="Namespace"
                 variant="outlined"
                 value={selectedInput!=null ? data[selectedInput].namespace: newConfigNamespace}
                 onChange={(e)=>handleInputChange(e,"namespace")}
                 fullWidth
               />
-              <TextField
-                label="Action"
+             <TextField
+                sx={{mt:1,mb:1}}
+                label="Gateway"
                 variant="outlined"
-                value={selectedInput!=null ? data[selectedInput].action: newConfigAction}
-                onChange={(e)=>handleInputChange(e,"action")}
+                value={selectedInput!=null ? data[selectedInput].gateway: newConfigGateway}
+                onChange={(e)=>handleInputChange(e,"gateway")}
                 fullWidth
               />
               <TextField
+                sx={{mt:1,mb:1}}
                 label="Version"
                 variant="outlined"
                 value={selectedInput!=null ? data[selectedInput].version: newConfigVersion}
                 onChange={(e)=>handleInputChange(e,"version")}
                 fullWidth
               />
-              <TextField
-                label="Gateway"
+             
+                <TextField
+                sx={{mt:1,mb:1}}
+                label="Action"
                 variant="outlined"
-                value={selectedInput!=null ? data[selectedInput].gateway: newConfigGateway}
-                onChange={(e)=>handleInputChange(e,"gateway")}
+                value={selectedInput!=null ? data[selectedInput].action: newConfigAction}
+                onChange={(e)=>handleInputChange(e,"action")}
                 fullWidth
               />
             </Box>
