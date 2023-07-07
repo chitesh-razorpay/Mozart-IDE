@@ -19,6 +19,7 @@ const App = () => {
   const [configs,setConfigs] = useState([])
   const [inputs,setInputs] = useState([])
   const [settings ,setSettings] = useState()
+  const [executionHistory,setExecutionHistory] = useState([])
   // Load data from local storage on initial render
   useEffect(() => {
     const storedConfigs = localStorage.getItem("configs");
@@ -29,6 +30,10 @@ const App = () => {
     const storedInputs = localStorage.getItem("inputs");
     if (storedInputs) {
       setInputs(JSON.parse(storedInputs));
+    }
+    const storedExe = localStorage.getItem("executions");
+    if (storedExe) {
+      setExecutionHistory(JSON.parse(storedExe));
     }
 
     const storedSetting = localStorage.getItem("settings")
@@ -62,11 +67,19 @@ const App = () => {
   const storeConfigs = (data)=>{
     localStorage.setItem("configs", JSON.stringify(data));
   }
+  const storeExecutionHistory = (data)=>{
+    localStorage.setItem("executions", JSON.stringify(data));
+  }
   const handleAddConfig = (newConfig)=>{
     let newData = [...configs,newConfig]
     setConfigs(newData)
     storeConfigs(newData)
     
+  }
+  const handleAddExecution = (newExe)=>{
+    let newData = [...executionHistory,newExe]
+    setExecutionHistory(newData)
+    storeExecutionHistory(newData)
   }
 
   const updateConfigData  = (data)=>{
@@ -88,7 +101,7 @@ const App = () => {
       case 2:
         return <ConfigPage data={configs} handleAddInput={handleAddConfig} updateInputData={updateConfigData}/>;
       case 3:
-        return <ExecutionPage inputs={inputs.map((inp,idx)=>{return {id:idx,...inp}})} configs={configs.map((cfg,idx)=>{return {id:idx,...cfg}})}/>;
+        return <ExecutionPage executionHistory={executionHistory} onExecute={handleAddExecution} inputs={inputs.map((inp,idx)=>{return {id:idx,...inp}})} configs={configs.map((cfg,idx)=>{return {id:idx,...cfg}})}/>;
       case 4:
         return <SettingsPage settings={settings} onSave={handleSettingSave}/>;
       default:

@@ -12,109 +12,131 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Card,CardContent
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Editor from '../../Editor';
-import SelectInput from '@mui/material/Select/SelectInput';
-import { NetworkCellRounded } from '@mui/icons-material';
 
-const ExecutionPage = ({ configs = [
-    { id:1,name: 'config 1', data: { json:{value: 'Data 1'} } },
-    { id:2,name: 'config 2', data: { json:{value: 'Data 1'} }},
-  ], inputs = [
-    { id:1,name: 'Input 1', data: { json:{value: 'Data 1'} } },
-    { id:2,name: 'Input 2', data: { json:{value: 'Data 1'} }},
-  ] }) => {
+const ExecutionPage = ({executionHistory,onExecute,
+  configs = [
+    { id: 1, name: 'config 1', data: { json: { value: 'Data 1' } } },
+    { id: 2, name: 'config 2', data: { json: { value: 'Data 1' } } },
+  ],
+  inputs = [
+    { id: 1, name: 'Input 1', data: { json: { value: 'Data 1' } } },
+    { id: 2, name: 'Input 2', data: { json: { value: 'Data 1' } } },
+  ],
+}) => {
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [selectedInput, setSelectedInput] = useState(null);
-  const [executionHistory, setExecutionHistory] = useState([]);
+  // const [executionHistory, setExecutionHistory] = useState([]);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-
-
+  const [outputResponses, setOutputResponses] = useState([]);
+  console.log(executionHistory,"history")
   const handleConfigChange = (event) => {
-    console.log("config chagne",event.target)
     setSelectedConfig(event.target.value);
   };
 
   const handleInputChange = (event) => {
-    console.log(event.target.value)
     setSelectedInput(event.target.value);
   };
 
-  
   const handleSnackbarClose = () => {
     setIsSnackbarOpen(false);
   };
 
-  const  handleOnExecute= () => {
-    // {input,"config":{}}
-    if (selectedConfig!=null && selectedInput!=null) {
-      console.log(configs[selectedConfig],selectedConfig,configs)
-      let inputData = inputs[selectedInput].data.text
-      let config = configs[selectedConfig]
-      let configData = configs[selectedConfig].data.text
+  const handleOnExecute = () => {
+    if (selectedConfig !== null && selectedInput !== null) {
+      let inputData = inputs[selectedInput]?.data?.text;
+      let config = configs[selectedConfig];
+      let configData = configs[selectedConfig]?.data?.text;
+      console.log(inputData,configData)
       let data = {
-       ...JSON.parse(inputData),
-        config:JSON.parse(configData)
-      }
+        ...JSON.parse(inputData),
+        config: configData ? JSON.parse(configData):{},
+      };
 
       const headers = new Headers();
       headers.append('Content-Type', 'application/json');
       headers.append('Authorization', 'Basic ' + btoa('api:api'));
 
-      let url = `http://localhost:8000/${config.namespace}/${config.gateway}/${config.version}/${config.action}`
-      // Make the API call here using the execution details
-      // Example code:
-      console.log(data,JSON.stringify(data))
+      let url = `http://localhost:8000/${config.namespace}/${config.gateway}/${config.version}/${config.action}`;
+
       fetch(url, {
         method: 'POST',
-        headers:headers,
+        headers: headers,
         body: JSON.stringify(data),
       })
         .then((response) => response.json())
         .then((data) => {
-          // Handle the response data
           console.log('API response:', data);
+          let newExecution = {
+            config:selectedConfig,
+            input:selectedInput,
+            response:JSON.stringify(data)
+          }
+          onExecute(newExecution)
+          setOutputResponses((prevResponses) => [...prevResponses, JSON.stringify(data)]);
         })
         .catch((error) => {
-          // Handle the error
+          let newExecution = {
+            config:selectedConfig,
+            input:selectedInput,
+            response:JSON.stringify({"error":"Api called failed"})
+          }
+          onExecute(newExecution)
           console.error('API error:', error);
         });
-  
-      setExecutionHistory((prevHistory) => [...prevHistory, {config:selectedConfig,input:selectedInput}]);
+
       setSelectedConfig(null);
       setSelectedInput(null);
       setIsSnackbarOpen(true);
     }
   };
 
-  
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
         <Grid item xs={4}>
           <Paper sx={{ height: '100%', padding: 2 }}>
-          <Typography variant="h5" gutterBottom sx={{ backgroundColor: '#f3f3f3', color: '#333', padding: '10px' }}>
-        Execution History
-        </Typography>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ backgroundColor: '#f3f3f3', color: '#333', padding: '10px' }}
+            >
+              Execution History
+            </Typography>
             <List>
-            {executionHistory.map((execution, index) => (
+              {executionHistory && executionHistory?.map((execution, index) => (
                 <React.Fragment key={index}>
-                <ListItem disablePadding sx={{ padding: '10px 0' }}>
-                    <Card sx={{ width:'100%',boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                    <CardContent>
-                        <Typography variant="subtitle1" color="primary">
-                        Config: {execution.config}
+                  <ListItem disablePadding sx={{ padding: '10px 0' }}>
+                    <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ width: '100%' }}>
+                        <Grid container spacing={7} alignItems="center" justifyItems={"space-evenly"}>
+                          <Grid item >
+                            <Typography variant="subtitle1" color="primary">
+                              Config: {execution.config}
+                            </Typography>
+                          </Grid>
+                          <Grid item >
+                            <Typography variant="subtitle1">
+                              Input: {execution.input}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </AccordionSummary>
+
+                      <AccordionDetails>
+                        <Typography variant="body2" sx={{ mt: 2 }}>
+                           {execution.response}
                         </Typography>
-                        <Typography variant="body2">
-                        Input: {execution.input}
-                        </Typography>
-                    </CardContent>
-                    </Card>
-                </ListItem>
-                {index !== executionHistory.length - 1 && <Divider />}
+                      </AccordionDetails>
+                    </Accordion>
+                  </ListItem>
                 </React.Fragment>
-            ))}
+              ))}
             </List>
           </Paper>
         </Grid>
@@ -133,22 +155,24 @@ const ExecutionPage = ({ configs = [
                 fullWidth
                 sx={{ mb: 2 }}
               >
-                {/* <MenuItem value="">None</MenuItem> */}
                 {configs.map((config) => (
                   <MenuItem key={config.id} value={config.id}>
                     {config.namespace}
                   </MenuItem>
                 ))}
               </Select>
-              {console.log("selected config",selectedConfig,configs)}
-             {selectedConfig!=null &&  <Box sx={{ mt: 2 }}>
+              {selectedConfig != null && (
+                <Box sx={{ mt: 2 }}>
                   <Typography variant="subtitle1" gutterBottom>
                     Config Data:
                   </Typography>
-                  <Editor data={configs.find((config) => config.id === selectedConfig!=null)?.data} />
-                </Box>}
+                  <Editor
+                    data={configs.find((config) => config.id === selectedConfig)?.data}
+                  />
+                </Box>
+              )}
             </Box>
-            {selectedConfig!=null && (
+            {selectedConfig != null && (
               <Box sx={{ mt: 2 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Select Input:
@@ -165,12 +189,16 @@ const ExecutionPage = ({ configs = [
                     </MenuItem>
                   ))}
                 </Select>
-                {selectedInput!=null && (<Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Input Data:
-                  </Typography>
-                  <Editor data={inputs.find((input) => input.id === selectedInput)?.data} />
-                </Box>)}
+                {selectedInput != null && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle1" gutterBottom>
+                      Input Data:
+                    </Typography>
+                    <Editor
+                      data={inputs.find((input) => input.id === selectedInput)?.data}
+                    />
+                  </Box>
+                )}
               </Box>
             )}
             <Box sx={{ mt: 2 }}>
