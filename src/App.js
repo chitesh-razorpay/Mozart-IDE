@@ -16,7 +16,7 @@ import { display } from "@mui/system";
 
 const theme = createTheme()
 
-const DEFAUTL_SETTINGS = {mozartUrl:"default_url",username:"default_user",password:"password"}
+const DEFAUTL_SETTINGS = {mozartUrl:"https://cc08-121-242-131-242.ngrok-free.app/",username:"api",password:"api"}
 const App = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [configs,setConfigs] = useState([])

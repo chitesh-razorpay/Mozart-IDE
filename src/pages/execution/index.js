@@ -62,7 +62,7 @@ const ExecutionPage = ({
         ...JSON.parse(inputData),
         config: configData ? JSON.parse(configData):{},
       };
-
+      console.log("settings",settings)
       const headers = new Headers();
       headers.append('Content-Type', 'application/json');
       headers.append('Authorization', 'Basic ' + btoa(`${settings.username}:${settings.password}`));
