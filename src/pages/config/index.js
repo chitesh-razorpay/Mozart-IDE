@@ -12,12 +12,12 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
-import Editor from '../../Editor';
+import Editor from '../../components/editor/Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 const BLANK_DATA = {json:{},text:{}}
 export default function ConfigPage({data=[],handleAddInput,updateInputData}) {
-
+  const [newConfigName,setNewConfigName]  = useState("Config " + data.length)
   const [newConfigNamespace, setNewConfigNamespace] = useState('test');
   const [newConfigVersion, setNewConfigVersion] = useState('test');
   const [newConfigGateway, setNewConfigGateway] = useState('test');

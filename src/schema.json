@@ -1,0 +1,520 @@
+{
+    "$id": "https://razorpay.com/action-config.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Action Config",
+    "description": "Action config for the specific gateway action",
+    "required": [
+        "responseData",
+        "steps"
+    ],
+    "type": "object",
+    "properties": {
+        "redactLiterals": {
+            "description": "config level redaction",
+            "$ref": "#/$defs/Redact"
+        },
+        "base": {
+            "type": "string"
+        },
+        "errorCriteria": {
+            "type": "object",
+            "description": "test error Criteria",
+            "additionalProperties": {
+                "type": "object"
+            }
+        },
+        "responseData": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "steps": {
+            "type": "array",
+            "items": {
+                "description": "Step defined in the action config",
+                "$ref": "#/$defs/ActionStep"
+            }
+        },
+        "bulkSource": {
+            "type": "string"
+        },
+        "parallel": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object"
+            }
+        },
+        "stepGroups": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/$defs/Step"
+                }
+            }
+        },
+        "discardOutputDataSink": {
+            "type": "boolean"
+        }
+    },
+    "$defs": {
+        "Redact": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Redact",
+            "description": "redact config",
+            "type": "object",
+            "properties": {
+                "Literals": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Regex": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "Keys": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ActionStep": {
+            "$id": "https://razorpay.com/action-step.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Action Step",
+            "description": "Action step config for the specific gateway action",
+            "required": [
+                "name",
+                "component",
+                "input"
+            ],
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "component": {
+                    "type": "string",
+                    "enum": [
+                        "Transformer",
+                        "Validator",
+                        "Mapper",
+                        "RequestExecutorV2",
+                        "Formatter",
+                        "Encryptor",
+                        "Signer"
+                    ]
+                },
+                "event": {
+                    "description": "event definition",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "redact": {
+                    "description": "step level redaction",
+                    "$ref": "#/$defs/Redact"
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Validator"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Validator input",
+                                "$ref": "#/$defs/Validator"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Transformer"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Transformer input",
+                                "$ref": "#/$defs/Transformer"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Mapper"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Mapper input",
+                                "$ref": "#/$defs/Mapper"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Formatter"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Formatter input",
+                                "$ref": "#/$defs/Formatter"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "RequestExecutorV2"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "RequestExecutorV2 input",
+                                "$ref": "#/$defs/RequestExecutorV2"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Encryptor"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Encryptor input",
+                                "$ref": "#/$defs/Encryptor"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "component": {
+                                "const": "Signer"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "input": {
+                                "description": "Signer input",
+                                "$ref": "#/$defs/Signer"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Step": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Step",
+            "description": "step config",
+            "type": "object",
+            "properties": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "component": {
+                        "type": "string"
+                    },
+                    "input": {
+                        "type": "object"
+                    },
+                    "event": {
+                        "type": "object"
+                    },
+                    "redact": {
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "name",
+                    "component"
+                ],
+                "additionalProperties": false
+            }
+        },
+        "Mapper": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "description": "Mapper input",
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "resolve": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "resolve"
+                ]
+            }
+        },
+        "Formatter": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "description": "Formatter input",
+            "type": "object",
+            "properties": {
+                "inputData": {
+                    "type": "string"
+                },
+                "inputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "xml",
+                        "json",
+                        "map"
+                    ]
+                },
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "xml",
+                        "json",
+                        "map"
+                    ]
+                },
+                "outputField": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "inputData",
+                "inputFormat",
+                "outputFormat",
+                "outputField"
+            ]
+        },
+        "Transformer": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "description": "Transformer input",
+            "type": "object",
+            "properties": {
+                "input_fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "output_fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string",
+                    "anyOf": [
+                        {
+                            "const": "string",
+                            "title": "Perform a string operation"
+                        },
+                        {
+                            "const": "modifyField",
+                            "title": "Modify a field"
+                        },
+                        {
+                            "const": "ruleStringGen",
+                            "title": "Generate a rule string"
+                        },
+                        {
+                            "const": "conditionalCopy",
+                            "title": "Perform a conditional copy"
+                        },
+                        {
+                            "const": "concatenate",
+                            "title": "Concatenate multiple fields"
+                        },
+                        {
+                            "const": "changeDataType",
+                            "title": "Change the data type of a field"
+                        }
+                    ]
+                },
+                "rule": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "input_fields",
+                "output_fields",
+                "type",
+                "rule"
+            ]
+        },
+        "Validator": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "description": "Validtor input",
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string"
+                    },
+                    "rule": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "data",
+                    "rule"
+                ]
+            }
+        },
+        "Encryptor": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Encryptor Component",
+            "description": "encryptor component config",
+            "type": "object",
+            "required": [
+                "input_fields",
+                "rule",
+                "type"
+            ],
+            "properties": {
+                "input_fields": {
+                    "type": "object",
+                    "required": [
+                        "plaintext",
+                        "key"
+                    ],
+                    "properties": {
+                        "plaintext": {
+                            "type": "string"
+                        },
+                        "key": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "rule": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "RequestExecutorV2": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "RequestExecutorV2",
+            "description": "RequestExecutorV2 config",
+            "type": "object",
+            "required": [
+                "body",
+                "url",
+                "timeout",
+                "method",
+                "headers"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string",
+                    "enum": [
+                        "GET",
+                        "PUT",
+                        "PATCH",
+                        "POST"
+                    ]
+                },
+                "headers": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string"
+                        },
+                        "Accept": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "Signer": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Signer Component Input Config",
+            "description": "Signer Component Input config",
+            "type": "object",
+            "required": [
+                "input_fields",
+                "rule",
+                "type"
+            ],
+            "properties": {
+                "input_fields": {
+                    "type": "object",
+                    "properties": {
+                        "text": {
+                            "type": "string"
+                        },
+                        "key": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "rule": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

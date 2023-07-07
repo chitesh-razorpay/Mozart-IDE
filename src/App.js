@@ -101,7 +101,7 @@ const App = () => {
       case 2:
         return <ConfigPage data={configs} handleAddInput={handleAddConfig} updateInputData={updateConfigData}/>;
       case 3:
-        return <ExecutionPage executionHistory={executionHistory} onExecute={handleAddExecution} inputs={inputs.map((inp,idx)=>{return {id:idx,...inp}})} configs={configs.map((cfg,idx)=>{return {id:idx,...cfg}})}/>;
+        return <ExecutionPage settings={settings} executionHistory={executionHistory} onExecute={handleAddExecution} inputs={inputs.map((inp,idx)=>{return {id:idx,...inp}})} configs={configs.map((cfg,idx)=>{return {id:idx,...cfg}})}/>;
       case 4:
         return <SettingsPage settings={settings} onSave={handleSettingSave}/>;
       default:

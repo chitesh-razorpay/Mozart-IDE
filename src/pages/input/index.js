@@ -12,7 +12,7 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
-import Editor from '../../Editor';
+import Editor from '../../components/editor/Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 const BLANK_DATA = {json:{},text:{}}

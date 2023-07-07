@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -10,16 +10,21 @@ import {
   Snackbar,
   List,
   ListItem,
-  ListItemText,
   Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Editor from '../../Editor';
+import Editor from '../../components/editor/Editor';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 
-const ExecutionPage = ({executionHistory,onExecute,
+
+const ExecutionPage = ({
+  settings,
+  executionHistory,
+  onExecute,
   configs = [
     { id: 1, name: 'config 1', data: { json: { value: 'Data 1' } } },
     { id: 2, name: 'config 2', data: { json: { value: 'Data 1' } } },
@@ -31,10 +36,10 @@ const ExecutionPage = ({executionHistory,onExecute,
 }) => {
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [selectedInput, setSelectedInput] = useState(null);
-  // const [executionHistory, setExecutionHistory] = useState([]);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [outputResponses, setOutputResponses] = useState([]);
-  console.log(executionHistory,"history")
+  // const [outputResponses, setOutputResponses] = useState([]);
+  const [selectedExecution, setSelectedExecution] = useState(null);
+
   const handleConfigChange = (event) => {
     setSelectedConfig(event.target.value);
   };
@@ -60,9 +65,9 @@ const ExecutionPage = ({executionHistory,onExecute,
 
       const headers = new Headers();
       headers.append('Content-Type', 'application/json');
-      headers.append('Authorization', 'Basic ' + btoa('api:api'));
+      headers.append('Authorization', 'Basic ' + btoa(`${settings.username}:${settings.password}`));
 
-      let url = `http://localhost:8000/${config.namespace}/${config.gateway}/${config.version}/${config.action}`;
+      let url = `${settings.mozartUrl}${config.namespace}/${config.gateway}/${config.version}/${config.action}`;
 
       fetch(url, {
         method: 'POST',
@@ -78,15 +83,16 @@ const ExecutionPage = ({executionHistory,onExecute,
             response:JSON.stringify(data)
           }
           onExecute(newExecution)
-          setOutputResponses((prevResponses) => [...prevResponses, JSON.stringify(data)]);
+          handleExecutionClick(newExecution)
         })
         .catch((error) => {
           let newExecution = {
             config:selectedConfig,
             input:selectedInput,
-            response:JSON.stringify({"error":"Api called failed"})
+            error:JSON.stringify({"error":error.message})
           }
           onExecute(newExecution)
+          handleExecutionClick(newExecution)
           console.error('API error:', error);
         });
 
@@ -95,6 +101,25 @@ const ExecutionPage = ({executionHistory,onExecute,
       setIsSnackbarOpen(true);
     }
   };
+
+  const handleExecutionClick = (execution) => {
+    setSelectedExecution(execution);
+  };
+
+  const handleModalClose = () => {
+    setSelectedExecution(null);
+  };
+
+  const getStatusIcon = (execution) => {
+    if (execution.response) {
+      return <CheckCircle style={{ color: 'green' }} />;
+    } else if (execution.error) {
+      return <Cancel style={{ color: 'red' }} />;
+    } else {
+      return null;
+    }
+  };
+  
 
   return (
     <Box sx={{ p: 3 }}>
@@ -109,34 +134,37 @@ const ExecutionPage = ({executionHistory,onExecute,
               Execution History
             </Typography>
             <List>
-              {executionHistory && executionHistory?.map((execution, index) => (
-                <React.Fragment key={index}>
-                  <ListItem disablePadding sx={{ padding: '10px 0' }}>
-                    <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ width: '100%' }}>
-                        <Grid container spacing={7} alignItems="center" justifyItems={"space-evenly"}>
-                          <Grid item >
-                            <Typography variant="subtitle1" color="primary">
-                              Config: {execution.config}
-                            </Typography>
-                          </Grid>
-                          <Grid item >
-                            <Typography variant="subtitle1">
-                              Input: {execution.input}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </AccordionSummary>
-
-                      <AccordionDetails>
-                        <Typography variant="body2" sx={{ mt: 2 }}>
-                           {execution.response}
-                        </Typography>
-                      </AccordionDetails>
-                    </Accordion>
-                  </ListItem>
-                </React.Fragment>
-              ))}
+              {executionHistory &&
+                executionHistory.map((execution, index) => (
+                  <React.Fragment key={index}>
+                    <ListItem
+                          sx={{
+                            padding: '10px',
+                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                            borderRadius: '4px',
+                            '&:hover': {
+                              backgroundColor: '#f5f5f5',
+                              cursor: 'pointer',
+                            },
+                          }}
+                          onClick={() => handleExecutionClick(execution)}
+                        >
+                          <Box sx={{ width: '100%' }}>
+                            <Grid container spacing={7} alignItems="center" justifyItems={'space-evenly'}>
+                              <Grid item>
+                                <Typography variant="subtitle1" color="primary">
+                                  Config: {execution.config}
+                                </Typography>
+                              </Grid>
+                              <Grid item>
+                                <Typography variant="subtitle1">Input: {execution.input}</Typography>
+                              </Grid>
+                              <Grid item>{getStatusIcon(execution)}</Grid>
+                            </Grid>
+                          </Box>
+                        </ListItem>
+                  </React.Fragment>
+                ))}
             </List>
           </Paper>
         </Grid>
@@ -166,9 +194,7 @@ const ExecutionPage = ({executionHistory,onExecute,
                   <Typography variant="subtitle1" gutterBottom>
                     Config Data:
                   </Typography>
-                  <Editor
-                    data={configs.find((config) => config.id === selectedConfig)?.data}
-                  />
+                  <Editor data={configs.find((config) => config.id === selectedConfig)?.data} />
                 </Box>
               )}
             </Box>
@@ -194,9 +220,7 @@ const ExecutionPage = ({executionHistory,onExecute,
                     <Typography variant="subtitle1" gutterBottom>
                       Input Data:
                     </Typography>
-                    <Editor
-                      data={inputs.find((input) => input.id === selectedInput)?.data}
-                    />
+                    <Editor data={inputs.find((input) => input.id === selectedInput)?.data} />
                   </Box>
                 )}
               </Box>
@@ -215,6 +239,41 @@ const ExecutionPage = ({executionHistory,onExecute,
         onClose={handleSnackbarClose}
         message="New execution added"
       />
+      {selectedExecution && <Dialog
+        open={selectedExecution !== null}
+        onClose={handleModalClose}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle >Execution Details</DialogTitle>
+        <DialogContent>
+        <DialogContentText>
+          <Typography variant="subtitle1" gutterBottom>
+            Response:
+          </Typography>
+          <pre>{JSON.stringify(JSON.parse(selectedExecution?.response?selectedExecution?.response:selectedExecution?.error), null, 2)}</pre>
+        </DialogContentText>
+
+          <DialogContentText>
+            <Typography variant="subtitle1" gutterBottom>
+              Config:
+            </Typography>
+            <Editor data={configs.find((config) => config.id === selectedExecution?.config)?.data} />
+          </DialogContentText>
+          <Divider sx={{ my: 2 }} />
+          <DialogContentText>
+            <Typography variant="subtitle1" gutterBottom>
+              Input:
+            </Typography>
+            <Editor data={inputs.find((input) => input.id === selectedExecution?.input)?.data} />
+          </DialogContentText>
+          <Divider sx={{ my: 2 }} />
+        
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose}>Close</Button>
+        </DialogActions>
+      </Dialog>}
     </Box>
   );
 };
