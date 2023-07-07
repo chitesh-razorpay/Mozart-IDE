@@ -12,7 +12,7 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
-import Editor from '../../Editor';
+import Editor from '../../components/editor/Editor';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 const BLANK_DATA = { json: {}, text: {} }
@@ -52,11 +52,6 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
   };
 
   const handleOnSave = () => {
-    // if (newInputName.trim() === '') {
-    //   setSnackbarMsg("Config name can't be empty")
-    //   setIsSnackbarOpen(true)
-    //   return;
-    // }
 
     const newInput = {
       namespace: newConfigNamespace.trim(),
@@ -65,6 +60,14 @@ export default function ConfigPage({ data = [], handleAddInput, updateInputData 
       version: newConfigVersion.trim(),
       data: newInputData,
     };
+
+    Object.entries(newInput).forEach(([field, value]) => {
+      if (value.trim() ===''){
+        setSnackbarMsg(field + " name can't be empty")
+        setIsSnackbarOpen(true)
+        return;
+      }
+    });
 
     resetData()
     setNewInputData(BLANK_DATA);
