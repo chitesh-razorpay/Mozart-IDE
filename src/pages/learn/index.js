@@ -22,7 +22,13 @@ const LearnPage = () => {
   const configData = {
     sections: [
       {
-        title: 'Base Config',
+        title: 'Overview',
+        content: `
+Mozart is a no-code orchestration framework written in GoLang. This framework was introduced to ensure faster integrations with 3rd parties, i.e. Gateways, and vendors, given the primary business of Razorpay involves bank integrations.        
+        `
+      },
+      {
+        title: 'Configuration Structure',
         content: `
 # How to write a config for a new gateway?
 For integrating a gateway, you need to write atleast 2 kinds of configs:
@@ -582,8 +588,8 @@ so an _action config_ would look like this:
 
   return (
     <Box sx={{ p: 3 }}>
-    <Grid container spacing={3}>
-    <Grid item xs={12} sx={{m:2}}>
+      <Grid container spacing={3}>
+        {/* <Grid item xs={12} sx={{ m: 2 }}>
           <Typography
             variant="h4"
             gutterBottom
@@ -600,63 +606,63 @@ so an _action config_ would look like this:
             <InfoIcon sx={{ marginRight: '8px' }} />
             Learn
           </Typography>
+        </Grid> */}
+        <Grid item xs={12}>
+          <Accordion
+            sx={{ m: 2 }}
+            expanded={expandedSection === 'config'}
+            onChange={handleAccordionChange('config')}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Mozart Tutorial</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box sx={{ width: '100%' }}>
+                {configData.sections.map((section, index) => (
+                  <Accordion key={index}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <Typography variant="subtitle1">{section.title}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <ReactMarkdown>{section.content}</ReactMarkdown>
+                    </AccordionDetails>
+                  </Accordion>
+                ))}
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Add more accordion sections for other topics */}
+          <Accordion
+            sx={{ m: 2 }}
+
+            expanded={expandedSection === 'section2'}
+            onChange={handleAccordionChange('section2')}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Try Mozart</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body1">Content for Input Section  will be available soon.</Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          {/* <Accordion
+            sx={{ m: 2 }}
+
+            expanded={expandedSection === 'section3'}
+            onChange={handleAccordionChange('section3')}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h5">Execute(Coming Soon)</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body1">Content for Execute will be available soon.</Typography>
+            </AccordionDetails>
+          </Accordion> */}
         </Grid>
-      <Grid item xs={12}>
-        <Accordion
-        sx={{m:2}}
-          expanded={expandedSection === 'config'}
-          onChange={handleAccordionChange('config')}
-        >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h5">How to write a config for a new gateway?</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box sx={{ width: '100%' }}>
-              {configData.sections.map((section, index) => (
-                <Accordion key={index}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant="subtitle1">{section.title}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <ReactMarkdown>{section.content}</ReactMarkdown>
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-  
-        {/* Add more accordion sections for other topics */}
-        <Accordion
-                sx={{m:2}}
-
-          expanded={expandedSection === 'section2'}
-          onChange={handleAccordionChange('section2')}
-        >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h5">Input (Coming Soon)</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body1">Content for Input Section  will be available soon.</Typography>
-          </AccordionDetails>
-        </Accordion>
-  
-        <Accordion
-                sx={{m:2}}
-
-          expanded={expandedSection === 'section3'}
-          onChange={handleAccordionChange('section3')}
-        >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h5">Execute(Coming Soon)</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body1">Content for Execute will be available soon.</Typography>
-          </AccordionDetails>
-        </Accordion>
       </Grid>
-    </Grid>
-  </Box>
+    </Box>
   );
 };
 
