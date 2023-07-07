@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Mozart-IDE/static/css/main.4854eedc.css",
-    "main.js": "/Mozart-IDE/static/js/main.69613efe.js",
+    "main.js": "/Mozart-IDE/static/js/main.ec6137a8.js",
     "index.html": "/Mozart-IDE/index.html",
     "main.4854eedc.css.map": "/Mozart-IDE/static/css/main.4854eedc.css.map",
-    "main.69613efe.js.map": "/Mozart-IDE/static/js/main.69613efe.js.map"
+    "main.ec6137a8.js.map": "/Mozart-IDE/static/js/main.ec6137a8.js.map"
   },
   "entrypoints": [
     "static/css/main.4854eedc.css",
-    "static/js/main.69613efe.js"
+    "static/js/main.ec6137a8.js"
   ]
 }
